@@ -281,7 +281,13 @@ module.exports = function (options) {
                 var size = file.stat.size;
 
 
-                file.pipe(stream); // start upload
+                // start upload
+                // edited for compatibility with gulp 4.0.0 (https://github.com/gtg092x/gulp-sftp/issues/78#issuecomment-356475605)
+                if ( file.isStream() ) {
+                    file.contents.pipe( stream );
+                } else if ( file.isBuffer() ) {
+                    stream.end( file.contents );
+                }
 
                 stream.on('drain',function(){
                     uploadedBytes+=highWaterMark;
